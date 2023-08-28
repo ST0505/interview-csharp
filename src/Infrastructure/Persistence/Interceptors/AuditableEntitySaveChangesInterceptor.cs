@@ -18,6 +18,7 @@ public class AuditableEntitySaveChangesInterceptor : SaveChangesInterceptor
 
     public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
     {
+        //save the original hashid??
         UpdateEntities(eventData.Context);
 
         return base.SavingChanges(eventData, result);

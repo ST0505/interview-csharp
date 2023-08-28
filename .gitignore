@@ -236,3 +236,4 @@ _Pvt_Extensions
 /UserManagementService.ndproj
 /.mfractor
 src/WebUI/ClientApp/package-lock.json
+/src/Application/Url/Commands/ConvertToOriginalUrl.cs

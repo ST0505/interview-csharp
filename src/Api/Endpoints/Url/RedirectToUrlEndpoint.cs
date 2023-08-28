@@ -1,4 +1,4 @@
-using MediatR;
+﻿using MediatR;
 using UrlShortenerService.Api.Endpoints.Url.Requests;
 using UrlShortenerService.Application.Url.Commands;
 using IMapper = AutoMapper.IMapper;
@@ -42,6 +42,10 @@ public class RedirectToUrlEndpoint : BaseEndpoint<RedirectToUrlRequest>
             },
             ct
         );
-        await SendRedirectAsync(result);
+
+        if (result == null || result.Length == 0)
+            await SendNotFoundAsync(ct);
+        else
+            await SendRedirectAsync(result, cancellation: ct);
     }
 }

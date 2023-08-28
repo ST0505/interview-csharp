@@ -21,6 +21,8 @@ public class PerformanceBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequ
         _timer.Start();
 
         var response = await next();
+        //redirect here?
+       // context.Response.Redirect($"/#{response}");
 
         _timer.Stop();
 

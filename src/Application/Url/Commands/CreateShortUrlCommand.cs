@@ -42,7 +42,7 @@ public class CreateShortUrlCommandHandler : IRequestHandler<CreateShortUrlComman
         try
         {
             long urlId;
-            var urlExists = _context.Urls.Where(x => x.Id.Equals(request.Url)).FirstOrDefault();
+            var urlExists = _context.Urls.Where(x => x.OriginalUrl.Equals(request.Url)).FirstOrDefault();
 
             if (urlExists == null || urlExists.Id <= 0)
             {

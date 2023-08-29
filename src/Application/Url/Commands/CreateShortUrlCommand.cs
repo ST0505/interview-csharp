@@ -3,6 +3,7 @@ using FluentValidation;
 using HashidsNet;
 using MediatR;
 using UrlShortenerService.Application.Common.Interfaces;
+using UrlShortenerService.Application.Url.Operations;
 using Microsoft.Extensions.Logging;
 
 namespace UrlShortenerService.Application.Url.Commands;
@@ -41,29 +42,17 @@ public class CreateShortUrlCommandHandler : IRequestHandler<CreateShortUrlComman
 
         try
         {
-            long urlId;
-            var urlExists = _context.Urls.Where(x => x.OriginalUrl.Equals(request.Url)).FirstOrDefault();
-
-            if (urlExists == null || urlExists.Id <= 0)
-            {
-                var entity = new Domain.Entities.Url();
-                entity.OriginalUrl = request.Url;
-                _ = _context.Urls.Add(entity);
-                urlId = await _context.SaveChangesAsync(cancellationToken);
-            }
-            else
-                urlId = urlExists.Id;
-
-            var obj = new ShortenUrl(_hashids, _context);
-            response = obj.GetShortenedURL(request.Url, urlId);
+            var obj = new GetShortenedUrlOperation(_hashids, _context);
+            response = await obj.GetShortenedURLAsync(request.Url, cancellationToken);
 
             await Task.CompletedTask;
+
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while processing shorten url request.");
         }
 
-        return response;
+        return response ?? string.Empty;
     }
 }

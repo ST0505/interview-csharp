@@ -1,10 +1,10 @@
-﻿using System.Text.Encodings.Web;
-using System.Web;
-using FluentValidation;
+﻿using FluentValidation;
 using HashidsNet;
 using MediatR;
 using UrlShortenerService.Application.Common.Interfaces;
 using Microsoft.Extensions.Logging;
+using UrlShortenerService.Application.Common.Exceptions;
+using UrlShortenerService.Application.Url.Operations;
 
 namespace UrlShortenerService.Application.Url.Commands;
 
@@ -44,23 +44,14 @@ public class RedirectToUrlCommandHandler : IRequestHandler<RedirectToUrlCommand,
         {
             if (request != null && request.Id.Length > 0)
             {
-                var decodedRequest = HttpUtility.UrlDecode(request.Id);
-                var uri = new Uri(decodedRequest);
-                var encodedId = uri.AbsolutePath.ToString().TrimStart('/');
-
-                if (_context != null)
-                {
-                    var tmpId = _hashids.DecodeSingleLong(encodedId);
-                    var hashId = _context.Urls.Where(p => p.Id.Equals(tmpId)).FirstOrDefault();
-
-                    if (hashId != null)
-                        response = hashId?.OriginalUrl;
-                }
-                else
-                    throw new Exception("Database error");
+                var obj = new GetOriginalUrlOperation(_hashids, _context);
+                response = obj.GetOriginalURL(request.Id);
             }
 
             await Task.CompletedTask;
+
+            if (response == string.Empty)
+                throw new NotFoundException();
 
         }
         catch (Exception ex)
@@ -68,6 +59,6 @@ public class RedirectToUrlCommandHandler : IRequestHandler<RedirectToUrlCommand,
             _logger.LogError(ex, "An error occurred while processing redirect.");
         }
 
-        return response;
+        return response ?? string.Empty;
     }
 }

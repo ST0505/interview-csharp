@@ -41,6 +41,7 @@ public class CreateShortUrlEndpoint : BaseEndpoint<CreateShortUrlRequest>
             },
             ct
         );
+
         if (result != string.Empty)
             await SendOkAsync(result);
         else

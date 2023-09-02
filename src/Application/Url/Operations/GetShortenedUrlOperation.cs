@@ -33,6 +33,8 @@ public class GetShortenedUrlOperation
                 };
                 _ = _context.Urls.Add(entity);
                 urlId = await _context.SaveChangesAsync(ct);
+                if (urlId == 1)
+                    urlId = entity.Id;
             }
             else
                 urlId = urlExists.Id;
